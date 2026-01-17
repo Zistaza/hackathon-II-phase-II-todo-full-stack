@@ -5,34 +5,10 @@ from ..models.user import CurrentUser
 from ..middleware.auth import get_current_user
 from ..models.user_model import User
 from ..database import get_session
-from pydantic import BaseModel
+from ..models.task_model import Task, TaskCreate, TaskUpdate, TaskPublic
 from datetime import datetime
-import uuid
 
 router = APIRouter()
-
-
-class TaskBase(BaseModel):
-    title: str
-    description: str = ""
-    completed: bool = False
-
-
-class TaskCreate(TaskBase):
-    pass
-
-
-class TaskUpdate(BaseModel):
-    title: str = None
-    description: str = None
-    completed: bool = None
-
-
-class Task(TaskBase):
-    id: str
-    user_id: str
-    created_at: datetime
-    updated_at: datetime
 
 
 @router.get("/{user_id}/tasks", response_model=List[Task])
@@ -60,9 +36,12 @@ async def get_tasks(
             detail="Access denied: Cannot access another user's tasks"
         )
 
-    # In a real implementation, we would query the tasks table for this user
-    # For now, returning an empty list to demonstrate the auth flow
-    return []
+    # Query the database for tasks belonging to the current user
+    statement = select(Task).where(Task.user_id == current_user.user_id)
+    results = session.exec(statement)
+    tasks = results.all()
+
+    return tasks
 
 
 @router.post("/{user_id}/tasks", response_model=Task)
@@ -91,19 +70,19 @@ async def create_task(
             detail="Access denied: Cannot create tasks for another user"
         )
 
-    # In a real implementation, we would create a new task record
-    # For now, returning a mock task to demonstrate the auth flow
-    mock_task = Task(
-        id=str(uuid.uuid4()),
-        user_id=current_user.user_id,
+    # Create a new task record in the database
+    db_task = Task(
         title=task.title,
         description=task.description,
         completed=task.completed,
-        created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow()
+        user_id=current_user.user_id
     )
 
-    return mock_task
+    session.add(db_task)
+    session.commit()
+    session.refresh(db_task)
+
+    return db_task
 
 
 @router.get("/{user_id}/tasks/{id}", response_model=Task)
@@ -132,19 +111,17 @@ async def get_task(
             detail="Access denied: Cannot access another user's task"
         )
 
-    # In a real implementation, we would query for the specific task
-    # For now, returning a mock task to demonstrate the auth flow
-    mock_task = Task(
-        id=id,
-        user_id=current_user.user_id,
-        title="Mock Task",
-        description="This is a mock task for demonstration",
-        completed=False,
-        created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow()
-    )
+    # Query for the specific task in the database
+    statement = select(Task).where(Task.id == id, Task.user_id == current_user.user_id)
+    db_task = session.exec(statement).first()
 
-    return mock_task
+    if not db_task:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Task not found"
+        )
+
+    return db_task
 
 
 @router.put("/{user_id}/tasks/{id}", response_model=Task)
@@ -175,19 +152,26 @@ async def update_task(
             detail="Access denied: Cannot update another user's task"
         )
 
-    # In a real implementation, we would update the specific task record
-    # For now, returning a mock task to demonstrate the auth flow
-    mock_task = Task(
-        id=id,
-        user_id=current_user.user_id,
-        title=task_update.title or "Updated Mock Task",
-        description=task_update.description or "Updated mock task description",
-        completed=task_update.completed if task_update.completed is not None else False,
-        created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow()
-    )
+    # Query for the specific task in the database
+    statement = select(Task).where(Task.id == id, Task.user_id == current_user.user_id)
+    db_task = session.exec(statement).first()
 
-    return mock_task
+    if not db_task:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Task not found"
+        )
+
+    # Update the task with provided fields
+    update_data = task_update.dict(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(db_task, field, value)
+
+    session.add(db_task)
+    session.commit()
+    session.refresh(db_task)
+
+    return db_task
 
 
 @router.delete("/{user_id}/tasks/{id}")
@@ -216,8 +200,20 @@ async def delete_task(
             detail="Access denied: Cannot delete another user's task"
         )
 
-    # In a real implementation, we would delete the specific task record
-    # For now, returning a success message to demonstrate the auth flow
+    # Query for the specific task in the database
+    statement = select(Task).where(Task.id == id, Task.user_id == current_user.user_id)
+    db_task = session.exec(statement).first()
+
+    if not db_task:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Task not found"
+        )
+
+    # Delete the task from the database
+    session.delete(db_task)
+    session.commit()
+
     return {"message": f"Task {id} deleted successfully"}
 
 
@@ -247,6 +243,22 @@ async def toggle_task_completion(
             detail="Access denied: Cannot modify another user's task"
         )
 
-    # In a real implementation, we would toggle the task's completion status
-    # For now, returning a mock response to demonstrate the auth flow
-    return {"id": id, "completed": True, "message": f"Task {id} marked as completed"}
+    # Query for the specific task in the database
+    statement = select(Task).where(Task.id == id, Task.user_id == current_user.user_id)
+    db_task = session.exec(statement).first()
+
+    if not db_task:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Task not found"
+        )
+
+    # Toggle the completion status
+    db_task.completed = not db_task.completed
+    db_task.updated_at = datetime.utcnow()
+
+    session.add(db_task)
+    session.commit()
+    session.refresh(db_task)
+
+    return {"id": db_task.id, "completed": db_task.completed, "message": f"Task {id} completion status updated"}

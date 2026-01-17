@@ -19,6 +19,7 @@ def init_db():
     Initialize the database by creating all tables
     """
     from .models.user_model import User  # Import models to register them
+    from .models.task_model import Task  # Import Task model to register it
     from sqlmodel import SQLModel
 
     # Create all tables
