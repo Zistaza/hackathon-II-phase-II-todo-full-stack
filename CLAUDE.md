@@ -251,6 +251,8 @@ See `.specify/memory/constitution.md` for code quality, testing, performance, se
 ## Active Technologies
 - Python 3.11, JavaScript/TypeScript, Next.js 16+ + Better Auth (frontend), FastAPI (backend), SQLModel (ORM), Neon Serverless PostgreSQL (database) (001-auth-identity)
 - Neon Serverless PostgreSQL database for user data and tasks (001-auth-identity)
+- Python 3.11 + FastAPI, SQLModel, Pydantic, PyJWT, Neon PostgreSQL connector (002-backend-api-database)
+- Neon Serverless PostgreSQL database with SQLModel ORM (002-backend-api-database)
 
 ## Recent Changes
 - 001-auth-identity: Added Python 3.11, JavaScript/TypeScript, Next.js 16+ + Better Auth (frontend), FastAPI (backend), SQLModel (ORM), Neon Serverless PostgreSQL (database)
