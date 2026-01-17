@@ -6,7 +6,13 @@ You are an expert AI assistant specializing in Spec-Driven Development (SDD). Yo
 
 ## Task context
 
-**Your Surface:** You operate on a project level, providing guidance to users and executing development tasks via a defined set of tools.
+**Your Surface:** You operate on a project level, providing guidance to users and executing development tasks via a defined set of specialized agents.
+
+**Agent Specializations:**
+- **Auth Agent:** Handle authentication implementation using Better Auth
+- **Frontend Agent:** Develop frontend interfaces using Next.js 16+ (App Router)
+- **DB Agent:** Design and manage database operations with Neon Serverless PostgreSQL and SQLModel
+- **Backend Agent:** Develop backend services using Python FastAPI
 
 **Your Success is Measured By:**
 - All outputs strictly follow the user intent.
@@ -141,6 +147,32 @@ You are not expected to solve every problem autonomously. You MUST invoke the us
 
 Instructions: As an expert architect, generate a detailed architectural plan for [Project Name]. Address each of the following thoroughly.
 
+Technology Stack:
+| Layer      | Technology                    |
+|------------|-------------------------------|
+| Frontend   | Next.js 16+ (App Router)      |
+| Backend    | Python FastAPI                |
+| ORM        | SQLModel                      |
+| Database   | Neon Serverless PostgreSQL    |
+| Auth       | Better Auth                   |
+| Spec-Driven| Claude Code + Spec-Kit Plus   |
+
+API Endpoints for Todo Application:
+| Method | Endpoint                          | Description                 |
+|--------|----------------------------------|-----------------------------|
+| GET    | /api/{user_id}/tasks             | List all tasks              |
+| POST   | /api/{user_id}/tasks             | Create a new task           |
+| GET    | /api/{user_id}/tasks/{id}        | Get task details            |
+| PUT    | /api/{user_id}/tasks/{id}        | Update a task               |
+| DELETE | /api/{user_id}/tasks/{id}        | Delete a task               |
+| PATCH  | /api/{user_id}/tasks/{id}/complete | Toggle completion           |
+
+Authentication Flow:
+- Better Auth configured with JWT plugin to issue tokens
+- Frontend includes JWT token in Authorization: Bearer <token> header
+- Backend verifies JWT signature using shared secret
+- Backend filters data by authenticated user's ID
+
 1. Scope and Dependencies:
    - In Scope: boundaries and key features.
    - Out of Scope: explicitly excluded items.
@@ -208,3 +240,17 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 
 ## Code Standards
 See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
+
+## Project-Specific Guidelines
+- Follow Next.js 16+ App Router conventions for frontend development
+- Implement FastAPI endpoints with proper type hints and Pydantic models
+- Use SQLModel for database modeling and operations with Neon Serverless PostgreSQL
+- Integrate Better Auth with JWT for secure authentication
+- Ensure all API endpoints follow the specified patterns and filter data by authenticated user ID
+
+## Active Technologies
+- Python 3.11, JavaScript/TypeScript, Next.js 16+ + Better Auth (frontend), FastAPI (backend), SQLModel (ORM), Neon Serverless PostgreSQL (database) (001-auth-identity)
+- Neon Serverless PostgreSQL database for user data and tasks (001-auth-identity)
+
+## Recent Changes
+- 001-auth-identity: Added Python 3.11, JavaScript/TypeScript, Next.js 16+ + Better Auth (frontend), FastAPI (backend), SQLModel (ORM), Neon Serverless PostgreSQL (database)
