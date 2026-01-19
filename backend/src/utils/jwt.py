@@ -61,7 +61,8 @@ def verify_token(token: str) -> Optional[JWTData]:
         payload = jwt.decode(
             token,
             settings.BETTER_AUTH_SECRET,
-            algorithms=[settings.JWT_ALGORITHM]
+            algorithms=[settings.JWT_ALGORITHM],
+            audience="todo-app"  # Specify the expected audience
         )
 
         # Validate required claims

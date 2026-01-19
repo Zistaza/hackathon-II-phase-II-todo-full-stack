@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --card: #ffffff;
+  --card-foreground: #171717;
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --primary: #3b82f6;
+  --primary-foreground: #f9fafb;
+  --secondary: #f3f4f6;
+  --secondary-foreground: #111827;
+  --accent: #f3f4f6;
+  --accent-foreground: #111827;
+  --destructive: #ef4444;
+  --destructive-foreground: #f9fafb;
+  --ring: #3b82f6;
+  --radius: 0.5rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-ring: var(--ring);
+  --radius: var(--radius);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    --card: #171717;
+    --card-foreground: #ededed;
+    --border: #374151;
+    --input: #374151;
+    --primary: #60a5fa;
+    --primary-foreground: #030712;
+    --secondary: #1f2937;
+    --secondary-foreground: #f9fafb;
+    --accent: #1f2937;
+    --accent-foreground: #f9fafb;
+    --destructive: #7f1d1d;
+    --destructive-foreground: #f9fafb;
+    --ring: #60a5fa;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* Additional responsive utility classes */
+.container {
+  @apply mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Enhanced task item styles */
+.task-item {
+  @apply p-4 border rounded-lg transition-all duration-200;
+}
+
+.task-item.completed {
+  @apply bg-green-50 opacity-80;
+}
+
+.task-item:hover {
+  @apply shadow-md;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .task-item {
+    @apply p-3;
+  }
+
+  .btn-mobile-full {
+    @apply w-full mb-2;
+  }
+
+  .dashboard-grid {
+    @apply grid-cols-1;
+  }
+}
+
+@media (min-width: 641px) {
+  .dashboard-grid {
+    @apply grid-cols-2;
+  }
+}
+
+/* Loading spinner animation */
+.animate-spin-slow {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
