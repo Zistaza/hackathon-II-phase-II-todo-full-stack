@@ -25,8 +25,8 @@ export default function CreateTaskPage() {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-6">
-        <Link href="/tasks" className="text-blue-600 hover:underline">
-          ← Back to Tasks
+        <Link href="/tasks">
+          <Button>← Back to Tasks</Button>
         </Link>
       </div>
 

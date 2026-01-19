@@ -53,7 +53,7 @@ export const RegisterForm: React.FC = () => {
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
-          {error && <div className="text-red-500 text-sm">{error}</div>}
+          {error && <div className="text-destructive text-sm">{error}</div>}
 
           <Input
             label="Full Name"
@@ -100,9 +100,9 @@ export const RegisterForm: React.FC = () => {
             Create Account
           </Button>
 
-          <div className="mt-4 text-sm text-center">
+          <div className="mt-4 text-sm text-center text-muted-foreground">
             Already have an account?{' '}
-            <a href="/login" className="text-blue-600 hover:underline">
+            <a href="/login" className="text-primary hover:underline">
               Sign In
             </a>
           </div>

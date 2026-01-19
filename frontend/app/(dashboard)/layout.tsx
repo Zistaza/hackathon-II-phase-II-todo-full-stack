@@ -14,15 +14,28 @@ export default function DashboardLayout({
 }) {
   const { state } = useAuth();
 
-  // If user is not authenticated, redirect to login (handled by middleware, but good to check)
-  if (!state.isAuthenticated) {
+  // Show loading state while checking authentication
+  // The middleware will handle redirecting unauthenticated users to login
+  if (state.isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p>You need to be logged in to access this page.</p>
-          <Link href="/login" className="text-blue-600 hover:underline">
-            Go to Login
-          </Link>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If user is not authenticated after loading, the middleware has already redirected
+  // This shouldn't happen in practice since middleware handles it, but just in case
+  if (!state.isAuthenticated) {
+    // This case should not occur since middleware handles the redirect
+    // Just render a message indicating redirection is happening
+    typeof window !== 'undefined' && (window.location.href = '/login');
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p>Redirecting to login...</p>
         </div>
       </div>
     );
@@ -31,7 +44,7 @@ export default function DashboardLayout({
   return (
     <Providers>
       <TodoProvider>
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-background">
           <Header />
           <main className="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
             {children}

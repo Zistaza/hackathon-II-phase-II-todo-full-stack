@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { User, AuthResponse } from '../types';
 import { getCookie, setCookie, removeCookie } from '../lib/cookies';
 
@@ -118,6 +119,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     removeCookie('authToken');
     removeCookie('userData');
+    // Clear localStorage as well to ensure no user data remains
+    localStorage.removeItem('userData');
 
     dispatch({ type: LOGOUT });
   };

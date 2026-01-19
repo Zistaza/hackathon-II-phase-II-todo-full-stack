@@ -62,7 +62,7 @@ export default function TaskDetailPage() {
   if (loading) {
     return (
       <div className="max-w-2xl mx-auto flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -71,12 +71,12 @@ export default function TaskDetailPage() {
     return (
       <div className="max-w-2xl mx-auto">
         <div className="mb-6">
-          <Link href="/tasks" className="text-blue-600 hover:underline">
+          <Link href="/tasks" className="text-primary hover:underline">
             ← Back to Tasks
           </Link>
         </div>
-        <div className="p-4 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-red-600">{error}</p>
+        <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-md">
+          <p className="text-destructive">{error}</p>
           <Button
             variant="secondary"
             size="sm"
@@ -94,12 +94,12 @@ export default function TaskDetailPage() {
     return (
       <div className="max-w-2xl mx-auto">
         <div className="mb-6">
-          <Link href="/tasks" className="text-blue-600 hover:underline">
+          <Link href="/tasks" className="text-primary hover:underline">
             ← Back to Tasks
           </Link>
         </div>
         <div className="text-center py-12">
-          <p className="text-gray-500">Task not found</p>
+          <p className="text-muted-foreground">Task not found</p>
         </div>
       </div>
     );
@@ -108,7 +108,7 @@ export default function TaskDetailPage() {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-6">
-        <Link href="/tasks" className="text-blue-600 hover:underline">
+        <Link href="/tasks" className="text-primary hover:underline">
           ← Back to Tasks
         </Link>
       </div>
@@ -116,7 +116,7 @@ export default function TaskDetailPage() {
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start">
-            <CardTitle className={`${task.completed ? 'line-through text-gray-500' : ''}`}>
+            <CardTitle className={`${task.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
               {task.title}
             </CardTitle>
             <Button
@@ -130,8 +130,8 @@ export default function TaskDetailPage() {
         <CardContent>
           {task.description && (
             <div className="mb-4">
-              <h3 className="text-sm font-medium text-gray-700">Description</h3>
-              <p className={`mt-1 ${task.completed ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+              <h3 className="text-sm font-medium text-foreground">Description</h3>
+              <p className={`mt-1 ${task.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
                 {task.description}
               </p>
             </div>
@@ -139,14 +139,14 @@ export default function TaskDetailPage() {
 
           <div className="grid grid-cols-2 gap-4 mt-6">
             <div>
-              <h3 className="text-sm font-medium text-gray-700">Created</h3>
-              <p className="mt-1 text-gray-900">
+              <h3 className="text-sm font-medium text-foreground">Created</h3>
+              <p className="mt-1 text-foreground">
                 {new Date(task.created_at).toLocaleString()}
               </p>
             </div>
             <div>
-              <h3 className="text-sm font-medium text-gray-700">Updated</h3>
-              <p className="mt-1 text-gray-900">
+              <h3 className="text-sm font-medium text-foreground">Updated</h3>
+              <p className="mt-1 text-foreground">
                 {new Date(task.updated_at).toLocaleString()}
               </p>
             </div>

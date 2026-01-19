@@ -16,12 +16,12 @@ export const Button: React.FC<ButtonProps> = ({
   className = '',
   ...props
 }) => {
-  const baseClasses = 'inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background';
+  const baseClasses = 'inline-flex items-center justify-center rounded-lg font-semibold transition-all duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background active:scale-[0.98] shadow-sm hover:shadow-md';
 
   const variantClasses = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700',
-    secondary: 'bg-gray-200 text-gray-800 hover:bg-gray-300',
-    danger: 'bg-red-600 text-white hover:bg-red-700',
+    primary: 'bg-gradient-to-r from-primary to-indigo-500 text-primary-foreground hover:from-primary/90 hover:to-indigo-600 active:from-purple-500 active:to-purple-600 active:text-white',
+    secondary: 'bg-gradient-to-r from-secondary to-gray-400 text-secondary-foreground hover:from-secondary/90 hover:to-gray-500 active:from-purple-500 active:to-purple-600 active:text-white',
+    danger: 'bg-gradient-to-r from-destructive to-rose-600 text-destructive-foreground hover:from-destructive/90 hover:to-rose-700 active:from-purple-500 active:to-purple-600 active:text-white',
   };
 
   const sizeClasses = {
