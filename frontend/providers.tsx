@@ -4,6 +4,7 @@
 
 import React from 'react';
 import { AuthProvider } from './contexts/auth-context';
+import { ThemeProvider } from './contexts/theme-context';
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -11,8 +12,10 @@ interface ProvidersProps {
 
 export const Providers: React.FC<ProvidersProps> = ({ children }) => {
   return (
-    <AuthProvider>
-      {children}
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        {children}
+      </AuthProvider>
+    </ThemeProvider>
   );
 };

@@ -60,8 +60,8 @@ export default function EditTaskPage() {
             ← Back to Task
           </Link>
         </div>
-        <div className="p-4 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-red-600">{error}</p>
+        <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-md">
+          <p className="text-destructive">{error}</p>
           <Button
             variant="secondary"
             size="sm"
@@ -84,7 +84,7 @@ export default function EditTaskPage() {
           </Link>
         </div>
         <div className="text-center py-12">
-          <p className="text-gray-500">Task not found</p>
+          <p className="text-muted-foreground">Task not found</p>
         </div>
       </div>
     );
@@ -115,8 +115,8 @@ export default function EditTaskPage() {
           />
 
           {error && (
-            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
-              <p className="text-red-600">{error}</p>
+            <div className="mt-4 p-4 bg-destructive/10 border border-destructive/20 rounded-md">
+              <p className="text-destructive">{error}</p>
             </div>
           )}
         </CardContent>

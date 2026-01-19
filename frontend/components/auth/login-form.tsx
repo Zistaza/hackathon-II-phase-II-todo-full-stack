@@ -46,7 +46,7 @@ export const LoginForm: React.FC = () => {
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
-          {error && <div className="text-red-500 text-sm">{error}</div>}
+          {error && <div className="text-destructive text-sm">{error}</div>}
 
           <Input
             label="Email"
@@ -73,9 +73,9 @@ export const LoginForm: React.FC = () => {
             Sign In
           </Button>
 
-          <div className="mt-4 text-sm text-center">
+          <div className="mt-4 text-sm text-center text-muted-foreground">
             Don't have an account?{' '}
-            <a href="/register" className="text-blue-600 hover:underline">
+            <a href="/register" className="text-primary hover:underline">
               Register
             </a>
           </div>
