@@ -4,6 +4,10 @@ from .api.auth import router as auth_router
 from .api.tasks import router as tasks_router
 from .config.settings import settings
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Create FastAPI app instance
 app = FastAPI(
@@ -22,10 +26,10 @@ app.add_middleware(
 )
 
 # Include authentication routes
-app.include_router(auth_router, prefix="/api/v1")
+app.include_router(auth_router)
 
 # Include tasks routes (will be protected by authentication)
-app.include_router(tasks_router, prefix="/api/v1")
+app.include_router(tasks_router, prefix="/api")
 
 @app.get("/")
 async def root():

@@ -2,11 +2,15 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from typing import Dict, Any
 from sqlmodel import Session, select
 from pydantic import BaseModel
+from passlib.context import CryptContext
 from ..models.user_model import User, UserCreate, UserPublic
 from ..models.user import UserRegistrationRequest
 from ..utils.jwt import create_access_token, JWTData
 from ..config.settings import settings
 from ..database import get_session
+
+# Password hashing context
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -43,11 +47,14 @@ async def register_user(user_data: UserRegistrationRequest, session: Session = D
             detail="User with this email already exists"
         )
 
-    # Create new user (password hashing would normally happen here)
-    # For this implementation, we'll simulate password hashing
+    # Hash the password
+    hashed_password = pwd_context.hash(user_data.password)
+
+    # Create new user with hashed password
     new_user = User(
         email=user_data.email,
         name=user_data.name,
+        password=hashed_password,
     )
 
     # Add to session and commit
@@ -91,15 +98,11 @@ async def login_user(login_data: LoginRequest, session: Session = Depends(get_se
     # Find user by email
     user = session.exec(select(User).where(User.email == login_data.email)).first()
 
-    if not user:
+    if not user or not pwd_context.verify(login_data.password, user.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password"
         )
-
-    # In a real implementation, we would verify the password hash here
-    # For this example, we'll assume the password is correct
-    # (In a real app, you'd use something like bcrypt.verify(password, user.password_hash))
 
     # Create JWT token
     jwt_data = JWTData(
