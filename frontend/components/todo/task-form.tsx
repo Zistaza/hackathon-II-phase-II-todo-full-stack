@@ -16,7 +16,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
   onSubmit,
   onCancel,
   initialData = {},
-  submitButtonText = 'Create Task'
+  submitButtonText = 'Create Task',
 }) => {
   const [title, setTitle] = useState(initialData.title || '');
   const [description, setDescription] = useState(initialData.description || '');
@@ -39,7 +39,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
     onSubmit({
       title: title.trim(),
       description: description || null,
-      completed: initialData.completed || false
+      completed: initialData.completed || false,
     });
   };
 
@@ -47,6 +47,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && <div className="text-red-500 text-sm">{error}</div>}
 
+      {/* Title input */}
       <Input
         label="Title"
         id="title"
@@ -57,10 +58,10 @@ export const TaskForm: React.FC<TaskFormProps> = ({
         required
       />
 
+      {/* Description textarea */}
       <Input
         label="Description"
         id="description"
-        type="textarea"
         placeholder="Enter task description (optional)"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
@@ -69,9 +70,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
       />
 
       <div className="flex space-x-2">
-        <Button type="submit">
-          {submitButtonText}
-        </Button>
+        <Button type="submit">{submitButtonText}</Button>
         {onCancel && (
           <Button type="button" variant="secondary" onClick={onCancel}>
             Cancel
