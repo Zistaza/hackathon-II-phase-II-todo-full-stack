@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, HTMLMotionProps } from 'framer-motion';
 
 interface AnimatedButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
@@ -31,16 +31,20 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
     lg: 'h-11 px-8 text-base',
   };
 
-  const baseClasses = 'inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50';
+  const baseClasses =
+    'inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50';
 
   const buttonClasses = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
 
-  const prefersReducedMotion = typeof window !== 'undefined'
-    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    : false;
+  const prefersReducedMotion =
+    typeof window !== 'undefined'
+      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      : false;
 
   return (
     <motion.button
+      // Cast props to HTMLMotionProps<'button'> to fix TS type error
+      {...(props as HTMLMotionProps<'button'>)}
       whileHover={!prefersReducedMotion ? { scale: 1.05 } : {}}
       whileTap={!prefersReducedMotion ? { scale: 0.95 } : {}}
       className={buttonClasses}
@@ -53,7 +57,6 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
           props.onClick(e);
         }
       }}
-      {...props}
     >
       {children}
     </motion.button>

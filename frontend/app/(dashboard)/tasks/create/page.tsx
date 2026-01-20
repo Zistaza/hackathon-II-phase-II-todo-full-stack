@@ -8,13 +8,26 @@ import { TaskForm } from '../../../../components/todo/task-form';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../../components/ui/card';
 import { Button } from '../../../../components/ui/button';
 
+// TaskCreate type (description is optional)
+type TaskCreate = {
+  title: string;
+  description?: string | null;
+};
+
 export default function CreateTaskPage() {
   const router = useRouter();
   const { createTask } = useTodo();
 
-  const handleSubmit = async (taskData: { title: string; description: string | null }) => {
+  // handleSubmit now matches TaskForm exactly
+  const handleSubmit = async (taskData: TaskCreate) => {
     try {
-      await createTask(taskData);
+      // Normalize undefined description to null
+      const normalizedData: TaskCreate = {
+        ...taskData,
+        description: taskData.description ?? null,
+      };
+
+      await createTask(normalizedData);
       router.push('/tasks');
       router.refresh();
     } catch (error) {
