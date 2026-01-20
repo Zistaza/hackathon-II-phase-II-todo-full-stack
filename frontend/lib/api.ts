@@ -11,10 +11,13 @@ const apiInstance = axios.create({
   },
 });
 
+// Import the cookie helper functions
+import { getCookie, removeCookie } from './cookies';
+
 // Request interceptor to attach JWT token
 apiInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('authToken');
+    const token = getCookie('authToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -31,6 +34,9 @@ apiInstance.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Clear stored tokens and redirect to login
+      removeCookie('authToken');
+      removeCookie('userData');
+      // Also clear localStorage for consistency
       localStorage.removeItem('authToken');
       localStorage.removeItem('userData');
       window.location.href = '/login';

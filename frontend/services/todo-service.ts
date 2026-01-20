@@ -3,16 +3,17 @@
 import { apiInstance, API_BASE_URL } from '../lib/api';
 import { Task, TaskCreate, TaskUpdate } from '../types';
 import axios from 'axios';
+import { getCookie } from '../lib/cookies';
 
-// Get the current user ID from local storage
+// Get the current user ID from cookies
 const getCurrentUserId = (): string | null => {
-  const userData = localStorage.getItem('userData');
-  if (userData) {
+  const userDataStr = getCookie('userData');
+  if (userDataStr) {
     try {
-      const user = JSON.parse(userData);
+      const user = JSON.parse(decodeURIComponent(userDataStr));
       return user.id;
     } catch (error) {
-      console.error('Failed to parse user data:', error);
+      console.error('Failed to parse user data from cookie:', error);
       return null;
     }
   }
@@ -90,7 +91,8 @@ export const todoService = {
 
       await apiInstance.delete(`/${userId}/tasks/${taskId}`);
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Failed to delete task');
+      console.error('Delete task error:', error);
+      throw new Error(error.response?.data?.detail || error.response?.data?.message || 'Failed to delete task');
     }
   },
 

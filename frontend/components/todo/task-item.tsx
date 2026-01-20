@@ -31,11 +31,13 @@ export const TaskItem: React.FC<TaskItemProps> = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
+      whileHover={{ scale: 0.98 }}
+      whileTap={{ scale: 0.96 }}
       transition={{ duration: 0.3 }}
-      className={`group relative rounded-xl border transition-all duration-300 ${
+      className={`group relative rounded-xl border-2 transition-all duration-300 ${
         task.completed
-          ? 'bg-muted/50 border-emerald-200/30 dark:border-emerald-800/50 shadow-sm'
-          : 'bg-card border-border shadow-sm hover:shadow-md'
+          ? 'bg-muted/50 border-emerald-400/60 dark:border-emerald-500/70 shadow-sm hover:shadow-md hover:border-emerald-500/80 dark:hover:border-emerald-400/80'
+          : 'bg-card border-primary/50 dark:border-primary/60 shadow-sm hover:shadow-lg hover:border-primary/70 dark:hover:border-primary/80'
       }`}
     >
       <div className="p-5">
@@ -112,25 +114,25 @@ export const TaskItem: React.FC<TaskItemProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 ml-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div className="flex items-center gap-2 ml-4">
             <Link href={`/tasks/${task.id}/edit`}>
               <AnimatedButton
                 variant="outline"
                 size="sm"
-                className="h-8 w-8 p-0 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/10 dark:hover:text-primary"
+                className="h-10 w-10 p-0 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/10 dark:hover:text-primary rounded-lg"
                 aria-label="Edit task"
               >
-                <FiEdit2 className="w-4 h-4" />
+                <FiEdit2 className="w-5 h-5" />
               </AnimatedButton>
             </Link>
             <AnimatedButton
               variant="outline"
               size="sm"
-              className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive border-destructive/20 dark:hover:bg-destructive/10 dark:hover:text-destructive dark:border-destructive/30"
+              className="h-10 w-10 p-0 hover:bg-destructive/10 hover:text-destructive border-destructive/20 dark:hover:bg-destructive/10 dark:hover:text-destructive dark:border-destructive/30 rounded-lg"
               onClick={() => onDelete(task.id)}
               aria-label="Delete task"
             >
-              <FiTrash2 className="w-4 h-4" />
+              <FiTrash2 className="w-5 h-5" />
             </AnimatedButton>
           </div>
         </div>
