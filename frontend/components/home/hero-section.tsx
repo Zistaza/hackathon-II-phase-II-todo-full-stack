@@ -130,8 +130,8 @@ const HeroSection: React.FC = () => {
             key={i}
             className="absolute hidden md:block"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              left: `${(i * 25) + 10}%`,
+              top: `${(i * 20) + 20}%`,
             }}
             animate={{
               y: [0, -30, 0],
@@ -139,10 +139,10 @@ const HeroSection: React.FC = () => {
               rotate: [0, 10, 0, -10, 0],
             }}
             transition={{
-              duration: Math.random() * 4 + 3,
+              duration: 3 + i,
               repeat: Infinity,
               ease: "easeInOut",
-              delay: Math.random() * 2,
+              delay: i * 0.5,
             }}
           >
             <div className="w-2 h-2 rounded-full bg-primary/30"></div>

@@ -68,10 +68,10 @@ export default function Home() {
           key={i}
           className="fixed rounded-full bg-primary/20"
           style={{
-            width: Math.random() * 20 + 10,
-            height: Math.random() * 20 + 10,
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
+            width: 15 + (i * 3),
+            height: 15 + (i * 3),
+            top: `${20 + (i * 15)}%`,
+            left: `${15 + (i * 12)}%`,
           }}
           animate={{
             y: [0, -20, 0],
@@ -79,10 +79,10 @@ export default function Home() {
             opacity: [0.3, 0.6, 0.3],
           }}
           transition={{
-            duration: Math.random() * 3 + 2,
+            duration: 2 + (i * 0.5),
             repeat: Infinity,
             ease: "easeInOut",
-            delay: Math.random() * 2,
+            delay: i * 0.3,
           }}
         />
       ))}
