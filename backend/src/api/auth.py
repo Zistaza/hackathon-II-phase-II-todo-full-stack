@@ -11,34 +11,23 @@ from ..database import get_session
 
 # Password hashing context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+MAX_BCRYPT_LEN = 72  # bcrypt limitation
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 class AuthResponse(BaseModel):
-    """Response model for authentication endpoints"""
     token: str
     user: UserPublic
 
 
 class LoginRequest(BaseModel):
-    """Request model for login"""
     email: str
     password: str
 
 
 @router.post("/register", response_model=AuthResponse)
 async def register_user(user_data: UserRegistrationRequest, session: Session = Depends(get_session)) -> AuthResponse:
-    """
-    Register a new user
-
-    Args:
-        user_data: User registration information
-        session: Database session
-
-    Returns:
-        AuthResponse with JWT token and user information
-    """
     # Check if user already exists
     existing_user = session.exec(select(User).where(User.email == user_data.email)).first()
     if existing_user:
@@ -47,8 +36,11 @@ async def register_user(user_data: UserRegistrationRequest, session: Session = D
             detail="User with this email already exists"
         )
 
+    # Truncate password to bcrypt max length
+    password_to_hash = user_data.password[:MAX_BCRYPT_LEN]
+
     # Hash the password
-    hashed_password = pwd_context.hash(user_data.password)
+    hashed_password = pwd_context.hash(password_to_hash)
 
     # Create new user with hashed password
     new_user = User(
@@ -63,11 +55,7 @@ async def register_user(user_data: UserRegistrationRequest, session: Session = D
     session.refresh(new_user)
 
     # Create JWT token
-    jwt_data = JWTData(
-        user_id=new_user.id,
-        email=new_user.email
-    )
-
+    jwt_data = JWTData(user_id=new_user.id, email=new_user.email)
     token = create_access_token(jwt_data)
 
     # Return token and user info
@@ -85,31 +73,20 @@ async def register_user(user_data: UserRegistrationRequest, session: Session = D
 
 @router.post("/login", response_model=AuthResponse)
 async def login_user(login_data: LoginRequest, session: Session = Depends(get_session)) -> AuthResponse:
-    """
-    Authenticate user and return JWT token
-
-    Args:
-        login_data: User login credentials
-        session: Database session
-
-    Returns:
-        AuthResponse with JWT token and user information
-    """
     # Find user by email
     user = session.exec(select(User).where(User.email == login_data.email)).first()
 
-    if not user or not pwd_context.verify(login_data.password, user.password):
+    # Truncate password to bcrypt max length
+    password_to_verify = login_data.password[:MAX_BCRYPT_LEN]
+
+    if not user or not pwd_context.verify(password_to_verify, user.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password"
         )
 
     # Create JWT token
-    jwt_data = JWTData(
-        user_id=user.id,
-        email=user.email
-    )
-
+    jwt_data = JWTData(user_id=user.id, email=user.email)
     token = create_access_token(jwt_data)
 
     # Return token and user info
@@ -127,9 +104,4 @@ async def login_user(login_data: LoginRequest, session: Session = Depends(get_se
 
 @router.post("/logout")
 async def logout_user():
-    """
-    Logout user (stateless, so just client-side cleanup needed)
-    """
-    # In a stateless JWT system, logout is handled on the client side
-    # by removing the token from storage
     return {"message": "Successfully logged out"}
