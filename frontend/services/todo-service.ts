@@ -3,20 +3,29 @@
 import { apiInstance, API_BASE_URL } from '../lib/api';
 import { Task, TaskCreate, TaskUpdate } from '../types';
 import axios from 'axios';
-import { getCookie } from '../lib/cookies';
+import { getCookie, removeCookie } from '../lib/cookies';
 
 // Get the current user ID from cookies
 const getCurrentUserId = (): string | null => {
   const userDataStr = getCookie('userData');
   if (userDataStr) {
     try {
-      const user = JSON.parse(decodeURIComponent(userDataStr));
+      // Try parsing directly first
+      let user;
+      try {
+        user = JSON.parse(userDataStr);
+      } catch {
+        // If direct parsing fails, try decoding first
+        user = JSON.parse(decodeURIComponent(userDataStr));
+      }
+      console.log('Retrieved user ID:', user.id); // Debug log
       return user.id;
     } catch (error) {
       console.error('Failed to parse user data from cookie:', error);
       return null;
     }
   }
+  console.log('No userData cookie found'); // Debug log
   return null;
 };
 
@@ -29,10 +38,50 @@ export const todoService = {
         throw new Error('User not authenticated');
       }
 
-      const response = await apiInstance.get<Task[]>(`/${userId}/tasks`);
+      // Validate user ID format (should be a UUID-like string and URL-safe)
+      if (!userId || typeof userId !== 'string' || userId.length < 10 || /[^\w\-]/.test(userId)) {
+        console.error('Invalid user ID format:', userId);
+        throw new Error('Invalid user ID format');
+      }
+
+      // Log for debugging
+      console.log('Fetching tasks for userId:', userId);
+
+      // Construct the full URL for debugging - include /api prefix
+      const url = `/api/${userId}/tasks`;
+      console.log('Making request to URL:', url);
+
+      const response = await apiInstance.get<Task[]>(url);
       return response.data;
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Failed to fetch tasks');
+      console.error('Error fetching tasks:', error);
+      console.error('Full error response:', error.response);
+
+      // Check if it's a 401 error specifically
+      if (error.response?.status === 401) {
+        // Clear auth cookies and localStorage
+        removeCookie('authToken');
+        removeCookie('userData');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
+        window.location.href = '/login';
+        throw new Error('Authentication expired. Please log in again.');
+      }
+
+      // Check if it's a 404 error
+      if (error.response?.status === 404) {
+        console.error('404 error - User ID may be invalid or user does not exist:', userId);
+        // This might indicate that the user account was deleted or the ID is incorrect
+        // For safety, clear auth data and redirect to login
+        removeCookie('authToken');
+        removeCookie('userData');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
+        window.location.href = '/login';
+        throw new Error('User account not found. Please log in again.');
+      }
+
+      throw new Error(error.response?.data?.message || error.message || 'Failed to fetch tasks');
     }
   },
 
@@ -44,10 +93,19 @@ export const todoService = {
         throw new Error('User not authenticated');
       }
 
-      const response = await apiInstance.post<Task>(`/${userId}/tasks`, taskData);
+      const response = await apiInstance.post<Task>(`/api/${userId}/tasks`, taskData);
       return response.data;
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Failed to create task');
+      console.error('Error creating task:', error);
+      if (error.response?.status === 401) {
+        removeCookie('authToken');
+        removeCookie('userData');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
+        window.location.href = '/login';
+        throw new Error('Authentication expired. Please log in again.');
+      }
+      throw new Error(error.response?.data?.message || error.message || 'Failed to create task');
     }
   },
 
@@ -59,10 +117,19 @@ export const todoService = {
         throw new Error('User not authenticated');
       }
 
-      const response = await apiInstance.get<Task>(`/${userId}/tasks/${taskId}`);
+      const response = await apiInstance.get<Task>(`/api/${userId}/tasks/${taskId}`);
       return response.data;
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Failed to fetch task');
+      console.error('Error fetching task by ID:', error);
+      if (error.response?.status === 401) {
+        removeCookie('authToken');
+        removeCookie('userData');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
+        window.location.href = '/login';
+        throw new Error('Authentication expired. Please log in again.');
+      }
+      throw new Error(error.response?.data?.message || error.message || 'Failed to fetch task');
     }
   },
 
@@ -74,10 +141,19 @@ export const todoService = {
         throw new Error('User not authenticated');
       }
 
-      const response = await apiInstance.put<Task>(`/${userId}/tasks/${taskId}`, taskData);
+      const response = await apiInstance.put<Task>(`/api/${userId}/tasks/${taskId}`, taskData);
       return response.data;
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Failed to update task');
+      console.error('Error updating task:', error);
+      if (error.response?.status === 401) {
+        removeCookie('authToken');
+        removeCookie('userData');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
+        window.location.href = '/login';
+        throw new Error('Authentication expired. Please log in again.');
+      }
+      throw new Error(error.response?.data?.message || error.message || 'Failed to update task');
     }
   },
 
@@ -89,9 +165,17 @@ export const todoService = {
         throw new Error('User not authenticated');
       }
 
-      await apiInstance.delete(`/${userId}/tasks/${taskId}`);
+      await apiInstance.delete(`/api/${userId}/tasks/${taskId}`);
     } catch (error: any) {
       console.error('Delete task error:', error);
+      if (error.response?.status === 401) {
+        removeCookie('authToken');
+        removeCookie('userData');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
+        window.location.href = '/login';
+        throw new Error('Authentication expired. Please log in again.');
+      }
       throw new Error(error.response?.data?.detail || error.response?.data?.message || 'Failed to delete task');
     }
   },
@@ -104,10 +188,19 @@ export const todoService = {
         throw new Error('User not authenticated');
       }
 
-      const response = await apiInstance.patch(`/${userId}/tasks/${taskId}/complete`);
+      const response = await apiInstance.patch(`/api/${userId}/tasks/${taskId}/complete`);
       return response.data;
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Failed to toggle task completion');
+      console.error('Error toggling task completion:', error);
+      if (error.response?.status === 401) {
+        removeCookie('authToken');
+        removeCookie('userData');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
+        window.location.href = '/login';
+        throw new Error('Authentication expired. Please log in again.');
+      }
+      throw new Error(error.response?.data?.message || error.message || 'Failed to toggle task completion');
     }
   },
 };
